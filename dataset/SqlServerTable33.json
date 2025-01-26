@@ -1,0 +1,17 @@
+{
+	"name": "SqlServerTable33",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_onprems_sqlserver",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Products"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

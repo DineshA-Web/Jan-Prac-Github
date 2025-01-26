@@ -1,0 +1,160 @@
+{
+	"name": "Watermark table",
+	"properties": {
+		"activities": [
+			{
+				"name": "Watermark table",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select watermarkdate from jul24s.watermarktable \nwhere Tablename = 'Products'",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SqlServerTable30",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "On-premis Max Modified datetime",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": "select Max(ModifiedDate) Max_modifieddate\nfrom Products",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_onprms",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Migrate Incremental Load",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Watermark table",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "On-premis Max Modified datetime",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "@concat('select * from products\nwhere modifieddate > ''',activity('Watermark table').output.firstRow.watermarkdate, ''' and ModifiedDate <= ''',activity('On-premis Max Modified datetime').output.firstRow.Max_modifieddate,'''')",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "SqlServerSink",
+						"preCopyScript": "truncate table Jul24s.stg_products",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "SqlServerTable33",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SqlServerTable34",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Updated watermark datetime",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Migrate Incremental Load",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "LS_efn jul24e dev sqlserver",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": {
+								"value": "@concat('update Jul24s.watermarktable\nset watermarkdate= ''',activity('On-premis Max Modified datetime').output.firstRow.Max_modifieddate,''' where Tablename= ''','Products','''')\n\n",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2024-08-20T21:13:05Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

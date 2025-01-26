@@ -1,0 +1,28 @@
+{
+	"name": "ds_hydrationfile",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efnjul24devblobs",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Hydrationfile.csv",
+				"folderPath": {
+					"value": "@replace(substring(utcNow(),0,10),'-','/')",
+					"type": "Expression"
+				},
+				"container": "hydrationfile"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

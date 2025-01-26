@@ -1,0 +1,17 @@
+{
+	"name": "SqlServerTable29",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efn jul24e dev sqlserver",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Jul24s",
+			"table": "stg_product"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

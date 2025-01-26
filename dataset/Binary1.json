@@ -1,0 +1,19 @@
+{
+	"name": "Binary1",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efnjul24devblobs",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "SalesLT.ProductModel.csv",
+				"container": "staging"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

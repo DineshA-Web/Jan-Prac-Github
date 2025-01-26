@@ -1,0 +1,220 @@
+{
+	"name": "PL1 15 Stored Proc LOGS",
+	"properties": {
+		"activities": [
+			{
+				"name": "Stored Starting logs",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderStoredProcedureName": "[Jul24s].[upsADFLogsStarting]",
+						"storedProcedureParameters": {
+							"ADFName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								}
+							},
+							"ParentID": {
+								"type": "Int32",
+								"value": null
+							},
+							"PipeLName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							"RunID": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"Startingtime": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							},
+							"Triggername": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().TriggerName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SqlServerTable40",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "update ending Logs - success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute Pipeline1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[Jul24s].[uspADFLogsEndings]",
+					"storedProcedureParameters": {
+						"Endingtime": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"Errormessage": {
+							"value": null,
+							"type": "String"
+						},
+						"id": {
+							"value": {
+								"value": "@activity('Stored Starting logs').output.firstRow.id",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"status": {
+							"value": {
+								"value": "@variables('Status_Success')",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_efn jul24e dev sqlserver",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "update ending Logs - Failed",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Execute Pipeline1",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[Jul24s].[uspADFLogsEndings]",
+					"storedProcedureParameters": {
+						"Endingtime": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"Errormessage": {
+							"value": {
+								"value": "@activity('Execute Pipeline1').Error.Message",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"id": {
+							"value": {
+								"value": "@activity('Stored Starting logs').output.firstRow.id",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"status": {
+							"value": {
+								"value": "@variables('Status_Failed')",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_efn jul24e dev sqlserver",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Execute Pipeline1",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Stored Starting logs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "PL2 15 1 HW Stored Proc LOGS",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"variables": {
+			"Status_Success": {
+				"type": "String",
+				"defaultValue": "Success"
+			},
+			"Status_Failed": {
+				"type": "String",
+				"defaultValue": "Failure"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-27T20:52:21Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

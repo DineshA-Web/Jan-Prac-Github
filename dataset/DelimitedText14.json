@@ -1,0 +1,39 @@
+{
+	"name": "DelimitedText14",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efnjul24devblobs",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema": {
+				"type": "string"
+			},
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@concat(dataset().schema,'_',dataset().tablename,'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(substring(utcnow(),0,4),'/',substring(utcnow(),5,2),'/',substring(utcnow(),8,2))",
+					"type": "Expression"
+				},
+				"container": "hwcopy"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

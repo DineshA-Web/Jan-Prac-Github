@@ -1,0 +1,72 @@
+{
+	"name": "16 Mail Notification",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('Email')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Web1",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "POST",
+								"url": "https://prod-17.southeastasia.logic.azure.com:443/workflows/3877705ff52243619c264c50bc712af7/triggers/When_a_HTTP_request_is_received/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2FWhen_a_HTTP_request_is_received%2Frun&sv=1.0&sig=IvAtm5nNXXhw473x7bi8fnk_CVHF56pQulutREuE80M",
+								"body": {
+									"value": "@item()",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Email": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"To": "A.2130949@infosys.com",
+						"Subject": "Summa Sample Subject Email",
+						"Body": "Dear Dinesh,<br><br>Summa body of the email"
+					},
+					{
+						"To": "dineshwolverine6@gmail.com",
+						"Subject": "Summa Sample Subject Email",
+						"Body": "Dear Wolverine,<br><br>Summa Body of the email"
+					},
+					{
+						"To": "hemanandhin.2137565@infosys.com",
+						"Subject": "Summa Sample Subject Email",
+						"Body": "Dear Hema,<br><br>Summa Body of the email"
+					},
+					{
+						"To": "hemanandhini4296@gmail.com",
+						"Subject": "Summa Sample Subject Email",
+						"Body": "Dear Hema,<br><br>Summa Body of the email"
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-09-26T22:44:07Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

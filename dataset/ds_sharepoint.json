@@ -1,0 +1,43 @@
+{
+	"name": "ds_sharepoint",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efnjul24devblobs",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"sheetName": "Sheet1",
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "Hydration File.xlsx",
+				"container": "sharepoint"
+			},
+			"firstRowAsHeader": true
+		},
+		"schema": [
+			{
+				"name": "Sno",
+				"type": "String"
+			},
+			{
+				"name": "sourceSchema",
+				"type": "String"
+			},
+			{
+				"name": "sourceTableName",
+				"type": "String"
+			},
+			{
+				"name": "LoadType",
+				"type": "String"
+			},
+			{
+				"name": "Status",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

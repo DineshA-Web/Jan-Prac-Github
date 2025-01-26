@@ -1,0 +1,17 @@
+{
+	"name": "SqlServerTable46",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_onprems_sqlserver",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "jul24eproj",
+			"table": "Tablelist"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

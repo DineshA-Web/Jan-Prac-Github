@@ -1,0 +1,234 @@
+{
+	"name": "PL3 15 HW Stored Procedure",
+	"properties": {
+		"activities": [
+			{
+				"name": "Stored Starting Logs",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderStoredProcedureName": "[Jul24s].[upsADFLogsStarting]",
+						"storedProcedureParameters": {
+							"ADFName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().DataFactory",
+									"type": "Expression"
+								}
+							},
+							"ParentID": {
+								"type": "Int32",
+								"value": null
+							},
+							"PipeLName": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().Pipeline",
+									"type": "Expression"
+								}
+							},
+							"RunID": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().RunId",
+									"type": "Expression"
+								}
+							},
+							"Startingtime": {
+								"type": "DateTime",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
+							},
+							"Triggername": {
+								"type": "String",
+								"value": {
+									"value": "@pipeline().TriggerName",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "SqlServerTable43",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Fetching data",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Stored Starting Logs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "DelimitedText19",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "Stored procedure Success",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Fetching data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[Jul24s].[uspADFLogsEndings]",
+					"storedProcedureParameters": {
+						"Endingtime": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"Errormessage": {
+							"value": null,
+							"type": "String"
+						},
+						"id": {
+							"value": {
+								"value": "@activity('Stored Starting Logs').output.firstRow.id",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"status": {
+							"value": {
+								"value": "@variables('Success')",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_efn jul24e dev sqlserver",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Stored procedure Failed",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Fetching data",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[Jul24s].[uspADFLogsEndings]",
+					"storedProcedureParameters": {
+						"Endingtime": {
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						},
+						"Errormessage": {
+							"value": {
+								"value": "@activity('Fetching data').Error.Message",
+								"type": "Expression"
+							},
+							"type": "String"
+						},
+						"id": {
+							"value": {
+								"value": "@activity('Stored Starting Logs').output.firstRow.id",
+								"type": "Expression"
+							},
+							"type": "Int32"
+						},
+						"status": {
+							"value": {
+								"value": "@variables('Failed')",
+								"type": "Expression"
+							},
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_efn jul24e dev sqlserver",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"variables": {
+			"Success": {
+				"type": "String",
+				"defaultValue": "Success_Status"
+			},
+			"Failed": {
+				"type": "String",
+				"defaultValue": "Failed_Status"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-27T20:52:04Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

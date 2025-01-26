@@ -1,0 +1,9 @@
+{
+	"name": "efn-jul24ev-dev-adf",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "bde44062-b13b-40c9-ad66-3c5e8806b98f",
+		"tenantId": "449ba0f5-e2bd-4f61-bb22-1cda6395b429"
+	}
+}

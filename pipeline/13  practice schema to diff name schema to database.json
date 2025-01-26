@@ -1,0 +1,106 @@
+{
+	"name": "13  practice schema to diff name schema to database",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('Tablelist')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"sqlReaderQuery": {
+										"value": "@concat('select ',item().sourcecolumns,' from ',item().Sourceschema,'.',item().Sourcetablename)",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "SqlServerSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate"
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "SqlServerTable18",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "SqlServerTable19",
+									"type": "DatasetReference",
+									"parameters": {
+										"sinkschema": {
+											"value": "@item().sinkschema",
+											"type": "Expression"
+										},
+										"sinktablename": {
+											"value": "@item().sinktablename",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"Tablelist": {
+				"type": "Array",
+				"defaultValue": [
+					{
+						"Sourceschema": "saleslt",
+						"Sourcetablename": "productcategory",
+						"sourcecolumns": "productcategoryid,parentproductcategoryid,name,rowguid,modifieddate",
+						"sinkschema": "prac1",
+						"sinktablename": "productcategory"
+					},
+					{
+						"Sourceschema": "saleslt",
+						"Sourcetablename": "productdescription",
+						"sourcecolumns": "productdescriptionid,description,rowguid,modifieddate",
+						"sinkschema": "prac1",
+						"sinktablename": "productdescription"
+					}
+				]
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-12T13:52:19Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

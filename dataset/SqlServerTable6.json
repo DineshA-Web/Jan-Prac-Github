@@ -1,0 +1,31 @@
+{
+	"name": "SqlServerTable6",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efn jul24e dev sqlserver",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "ParentProductCategoryName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ProductCategoryName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ProductCategoryID",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "SalesLT",
+			"table": "vGetAllCategories"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

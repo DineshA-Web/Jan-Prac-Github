@@ -1,0 +1,13 @@
+{
+	"name": "SqlServerTable37",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efn jul24e dev sqlserver",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,34 @@
+{
+	"name": "SqlServerTable10",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_efn jul24e dev sqlserver",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema": {
+				"type": "string"
+			},
+			"Tablename": {
+				"type": "string"
+			},
+			"Column": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": {
+				"value": "@dataset().schema",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().Tablename",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

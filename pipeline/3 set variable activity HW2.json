@@ -1,0 +1,102 @@
+{
+	"name": "3 set variable activity HW2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set Azure",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Azure",
+					"value": "1"
+				}
+			},
+			{
+				"name": "Set Data",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Data",
+					"value": "2"
+				}
+			},
+			{
+				"name": "Set Engineer",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Engineer",
+					"value": "3"
+				}
+			},
+			{
+				"name": "Set Course",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Set Azure",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Set Engineer",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "course",
+					"value": {
+						"value": "@concat('Azure',' ','Data',' ','Engineer')",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"course": {
+				"type": "String"
+			},
+			"Data": {
+				"type": "String"
+			},
+			"Engineer": {
+				"type": "String"
+			},
+			"Azure": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-08-02T14:14:46Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
